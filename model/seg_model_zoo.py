@@ -6,8 +6,8 @@ from model.seg import (
     EfficientViTSeg,
     efficientvit_seg_b0,
 )
-from nn.norm import set_norm_eps
-from utils.network import load_state_dict_from_file
+from model.nn.norm import set_norm_eps
+from model.utils.network import load_state_dict_from_file
 
 __all__ = ["create_seg_model"]
 
