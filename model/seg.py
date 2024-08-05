@@ -130,7 +130,7 @@ class EfficientViTSeg(nn.Module):
 
 
 def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
-    from backbone import efficientvit_backbone_b0
+    from model.backbone import efficientvit_backbone_b0
 
     backbone = efficientvit_backbone_b0(**kwargs)
     if dataset == "bdd":
