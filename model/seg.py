@@ -17,7 +17,6 @@ from model.nn import (
     UpSampleLayer,
 )
 from model.utils import build_kwargs_from_config
-# from discriminator import FCDiscriminator
 __all__ = [
     "EfficientViTSeg",
     "efficientvit_seg_b0",
@@ -104,30 +103,16 @@ class EfficientViTSeg(nn.Module):
         super().__init__()
         self.backbone = backbone
         self.head1 = head1
-        self.head2 = head2
+        self.head2 = head2 
 
-
-
-    def forward(self, x: torch.Tensor, discriminator, domain) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         feed_dict = self.backbone(x)
-        stage4 = feed_dict['stage4'].clone()
-        if domain == 'target':
-            d_stage4 =discriminator[0](stage4)
-            d_stage4 = F.tanh(d_stage4)
-            d_stage4 = torch.abs(d_stage4)
-            stage4_big = d_stage4.expand(stage4.size())
-            feed_dict['stage4'] = stage4_big * stage4 + stage4
-            feed_dict['stage_final'] = feed_dict['stage4']
-        if domain == 'source':
-            feed_dict['stage4'] = stage4
-            feed_dict['stage_final'] = feed_dict['stage4']
         feed_da = feed_dict.copy()
         feed_ll = feed_dict.copy()
         drivable = self.head1(feed_da)
         lane_line = self.head2(feed_ll)
 
-        return stage4, [drivable["segout"], lane_line["segout"]]
-
+        return drivable["segout"], lane_line["segout"]
 
 def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b0
