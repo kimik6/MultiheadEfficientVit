@@ -59,6 +59,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
                                                                    'Change as per the GPU memory')
     parser.add_argument('--data', type=str, default='bdd', help='data type, bdd or IADD')
-    parser.add_argument('--engine', type=str, default=12, help='No. of parallel threads')
+    parser.add_argument('--engine', type=str, default='kaggle', help='No. of parallel threads')
 
     validation(parser.parse_args())
