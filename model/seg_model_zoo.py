@@ -2,7 +2,7 @@
 # Han Cai, Junyan Li, Muyan Hu, Chuang Gan, Song Han
 # International Conference on Computer Vision (ICCV), 2023
 
-from seg import (
+from model.seg import (
     EfficientViTSeg,
     efficientvit_seg_b0,
 )
