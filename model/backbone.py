@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 
-from efficientvit.models.nn import (
+from nn import (
     ConvLayer,
     DSConv,
     EfficientViTBlock,
