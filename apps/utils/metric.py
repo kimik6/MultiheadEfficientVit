@@ -4,7 +4,7 @@
 
 import torch
 
-from efficientvit.apps.utils.dist import sync_tensor
+from apps.utils.dist import sync_tensor
 
 __all__ = ["AverageMeter"]
 
