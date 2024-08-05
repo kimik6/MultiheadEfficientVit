@@ -16,7 +16,7 @@ from model.nn import (
     ResBlock,
     ResidualBlock,
 )
-from efficientvit.models.utils import build_kwargs_from_config
+from model.utils import build_kwargs_from_config
 
 __all__ = [
     "EfficientViTBackbone",

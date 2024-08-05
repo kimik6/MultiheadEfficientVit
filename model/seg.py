@@ -16,7 +16,7 @@ from model.nn import (
     ResidualBlock,
     UpSampleLayer,
 )
-from efficientvit.models.utils import build_kwargs_from_config
+from model.utils import build_kwargs_from_config
 # from discriminator import FCDiscriminator
 __all__ = [
     "EfficientViTSeg",
