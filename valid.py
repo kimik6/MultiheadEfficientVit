@@ -39,7 +39,6 @@ def validation(args):
     total_paramters = netParams(model)
     print('Total network parameters: ' + str(total_paramters))
 
-    model.load_state_dict(torch.load(args.weight))
     model.eval()
     example = torch.rand(1, 3, 360, 640).cuda()
     model = torch.jit.trace(model, example)
