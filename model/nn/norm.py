@@ -54,7 +54,7 @@ def reset_bn(
     from tqdm import tqdm
 
     from apps.utils import AverageMeter, sync_tensor
-    from models.utils import get_device, list_join
+    from model.utils import get_device, list_join
 
     bn_mean = {}
     bn_var = {}
