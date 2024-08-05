@@ -1,6 +1,5 @@
 import torch
 import torch
-from model import TwinLite as net
 import torch.backends.cudnn as cudnn
 import DataSet as myDataLoader
 from argparse import ArgumentParser
@@ -8,7 +7,7 @@ from utils import val, netParams
 import torch.optim.lr_scheduler
 from const import *
 from torchvision.transforms import transforms as T
-
+from model.seg_model_zoo import create_seg_model
 
 def validation(args):
     '''
@@ -25,7 +24,8 @@ def validation(args):
 
     ])
     # load the model
-    model = net.TwinLiteNet()
+    pretrained = args.pretrained
+    model = create_seg_model('b0', 'bdd', weight_url=pretrained)
     cuda_available = torch.cuda.is_available()
     if cuda_available:
         model = torch.nn.DataParallel(model)
@@ -42,7 +42,7 @@ def validation(args):
     model.load_state_dict(torch.load(args.weight))
     model.eval()
     example = torch.rand(1, 3, 360, 640).cuda()
-    # model = torch.jit.trace(model, example)
+    model = torch.jit.trace(model, example)
     da_segment_results, ll_segment_results = val(valLoader, model)
 
     msg = 'Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n' \
@@ -54,7 +54,7 @@ def validation(args):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--weight', default="pretrained/best.pth")
+    parser.add_argument('--pretrained', default="./pretrained/pretrained_bdd.pth")
     parser.add_argument('--num_workers', type=int, default=12, help='No. of parallel threads')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
                                                                    'Change as per the GPU memory')
