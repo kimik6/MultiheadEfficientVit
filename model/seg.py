@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from backbone import EfficientViTBackbone, EfficientViTLargeBackbone
+from model.backbone import EfficientViTBackbone, EfficientViTLargeBackbone
 from model.nn import (
     ConvLayer,
     DAGBlock,
