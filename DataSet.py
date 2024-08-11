@@ -201,7 +201,7 @@ class MyDataset(torch.utils.data.Dataset):
                 label2 = cv2.imread(image_name.replace("img", "lane").replace(".jpg", ".png"), 0)
             else:
                 label1 = cv2.imread(image_name.replace("img", "drivable").replace(".jpg", ".png"), 0)
-                label2 = cv2.imread(image_name.replace("img", "drivable").replace(".jpg", ".png"), 0)
+                label2 = cv2.imread(image_name.replace("img", "lane").replace(".jpg", ".png"), 0)
 
         if not self.valid:
             if random.random()<0.5:
