@@ -10,3 +10,4 @@ Our extensive experiments show that MultiEfficientViT not only excels on the BDD
 
 ![image](https://github.com/user-attachments/assets/5696f490-ee84-426d-a3bb-1bcdf19c7c19)
 
+Our source code is inspired by: EfficientVit , Twinlitenet
