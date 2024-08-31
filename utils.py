@@ -274,7 +274,7 @@ def valid(mymodel, Dataset):
         ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
     print(msg2)
 
-    return da_seg_miou,ll_seg_iou
+    return da_segment_results[2],ll_segment_results[1]
 
 
 def save_checkpoint(state, filenameCheckpoint='checkpoint.pth.tar'):
