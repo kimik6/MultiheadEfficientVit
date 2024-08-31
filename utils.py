@@ -11,6 +11,7 @@ from tqdm import tqdm
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torchvision.transforms import transforms as T
+import pickle
 
 def cycle(iterable):
     iterator = iter(iterable)
@@ -118,6 +119,9 @@ focal_loss_total = AverageMeter()
 loss_adv_total = AverageMeter()
 loss_D_target_total = AverageMeter()
 loss_D_source_total = AverageMeter()
+
+all_logs = [] 
+
 def train(args, data_loader, model, criterion,  optimizer, epoch):
     device = args.device
 
@@ -149,6 +153,19 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
         focal_loss_total.update(focal_loss,args.batch_size)
         loss.backward()
         optimizer.step()
+        logs = {
+            "epoch": epoch,
+            "tversky_loss": tversky_loss_total.avg,
+            "focal_loss": focal_loss_total.avg,
+            "loss_total": loss_total.avg,
+        }
+        
+        all_logs.append(logs)  # Append the logs for this epoch to the list
+        
+        # Save all_logs to the pickle file
+        with open('fine_tune_train_logs.pkl', 'wb') as f:
+            pickle.dump(all_logs, f)
+
         pbar.set_description(('%13s' * 1 + '%13.4g' * 3) %
                              (f'{epoch}/{args.max_epochs - 1}', tversky_loss_total.avg, focal_loss_total.avg, loss_total.avg))
 @torch.no_grad()
@@ -243,7 +260,7 @@ def valid(mymodel, Dataset):
 
     #     model.load_state_dict(torch.load(PATH))
     model.eval()
-    example = torch.rand(12, 3, 512, 512).cuda()
+    example = torch.rand(16, 3, 512, 512).cuda()
     model = torch.jit.trace(model, example)
     da_segment_results, ll_segment_results = val(valLoader, model)
 
@@ -256,6 +273,8 @@ def valid(mymodel, Dataset):
         da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],
         ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
     print(msg2)
+
+    return da_seg_miou,ll_seg_iou
 
 
 def save_checkpoint(state, filenameCheckpoint='checkpoint.pth.tar'):

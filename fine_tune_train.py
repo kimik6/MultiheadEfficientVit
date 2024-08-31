@@ -15,7 +15,8 @@ from loss import TotalLoss
 import os
 import torch.backends.cudnn as cudnn
 from model.seg_model_zoo import create_seg_model
-
+import pickle
+all_logs=[]
 def train_net(args):
     # load the model
     cuda_available = torch.cuda.is_available()
@@ -100,13 +101,24 @@ def train_net(args):
         print("Learning rate: " + str(lr))
         # train for one epoch
         if args.data == 'bdd':
-            valid(model, source_valLoader)
+            da_seg_miou,ll_seg_iou = valid(model, source_valLoader)
             train(args, source_loader, model,  criteria, optimizer,epoch)
 
         elif args.data == 'IADD':
-            valid(model, target_valLoader)
+            da_seg_miou,ll_seg_iou = valid(model, target_valLoader)
             train(args,target_loader, model, criteria, optimizer, epoch)
 
+        logs = {
+            "epoch": epoch,
+            "drivable area miou": da_seg_miou,
+            "lane line iou": ll_seg_iou
+            }
+        
+        all_logs.append(logs)  # Append the logs for this epoch to the list
+        
+        # Save all_logs to the pickle file
+        with open('fine_tune_eval_logs.pkl', 'wb') as f:
+            pickle.dump(all_logs, f)
 
         torch.save(model.state_dict(), model_file_name)
 
