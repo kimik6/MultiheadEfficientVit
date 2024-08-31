@@ -253,7 +253,7 @@ def valid(mymodel, Dataset):
 
     valLoader = torch.utils.data.DataLoader(
         Dataset,
-        batch_size=2, shuffle=False, num_workers=1, pin_memory=True)
+        batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
 
     total_paramters = netParams(model)
     print('Total network parameters: ' + str(total_paramters))
