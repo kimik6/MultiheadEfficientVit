@@ -81,12 +81,12 @@ def train_net(args):
         myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='IADD'),
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
     
-    # for param in model.backbone.input_stem.parameters():
-    #     param.requires_grad = False
+    for param in model.backbone.input_stem.parameters():
+        param.requires_grad = False
     ct = 0
     for child in model.backbone.stages.children():
         ct += 1
-        if 2< ct < 5:
+        if 2< ct < 3:
             for param in child.parameters():
                 param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
