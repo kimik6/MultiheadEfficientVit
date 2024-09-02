@@ -99,22 +99,39 @@ class SegHead(DAGBlock):
 
 
 class EfficientViTSeg(nn.Module):
-    def __init__(self, backbone: EfficientViTBackbone or EfficientViTLargeBackbone, head1: SegHead, head2: SegHead) -> None:
+    def __init__(self, backbone: EfficientViTBackbone or EfficientViTLargeBackbone, head1: SegHead, head2: SegHead, multitask: str) -> None:
         super().__init__()
         self.backbone = backbone
         self.head1 = head1
         self.head2 = head2 
+        self.multitask = multitask
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        feed_dict = self.backbone(x)
-        feed_da = feed_dict.copy()
-        feed_ll = feed_dict.copy()
-        drivable = self.head1(feed_da)
-        lane_line = self.head2(feed_ll)
+        if self.multitask == 'multi':
+            feed_dict = self.backbone(x)
+            feed_da = feed_dict.copy()
+            feed_ll = feed_dict.copy()
+            drivable = self.head1(feed_da)
+            lane_line = self.head2(feed_ll)
 
-        return drivable["segout"], lane_line["segout"]
+            return drivable["segout"], lane_line["segout"]
+        
+        elif self.multitask == 'lane':
+            feed_dict = self.backbone(x)
+            feed_ll = feed_dict.copy()
+            lane_line = self.head2(feed_ll)
 
-def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
+            return lane_line["segout"]
+        
+        elif self.multitask == 'drivable':
+            feed_dict = self.backbone(x)
+            feed_da = feed_dict.copy()
+            drivable = self.head1(feed_da)
+
+            drivable["segout"]
+            
+
+def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b0
 
     backbone = efficientvit_backbone_b0(**kwargs)
@@ -148,6 +165,6 @@ def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
 
     else:
         raise NotImplementedError
-    model = EfficientViTSeg(backbone, head1, head2)
+    model = EfficientViTSeg(backbone, head1, head2,multitask)
     return model
 
