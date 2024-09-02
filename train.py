@@ -19,9 +19,9 @@ def train_net(args):
     num_gpus = torch.cuda.device_count()
 
     if args.pretrained is not None:
-        model = create_seg_model('b0', 'bdd', weight_url=args.pretrained)
+        model = create_seg_model('b0', 'bdd','multi', weight_url=args.pretrained)
     else:
-        model = create_seg_model('b0', 'bdd', False)
+        model = create_seg_model('b0', 'bdd','multi', False)
 
     if num_gpus > 1:
         model = torch.nn.DataParallel(model)

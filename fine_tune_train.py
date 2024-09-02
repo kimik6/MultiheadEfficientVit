@@ -31,9 +31,9 @@ def train_net(args):
     pretrained = args.pretrained
     engine = args.engine
     if pretrained is not None:
-        model = create_seg_model('b0', 'bdd', weight_url=pretrained)
+        model = create_seg_model('b0', 'bdd','multi', weight_url=pretrained)
     else:
-        model = create_seg_model('b0', 'bdd', False)
+        model = create_seg_model('b0', 'bdd','multi', False)
 
     args.savedir = args.savedir + '/'
 
