@@ -31,7 +31,7 @@ def create_seg_model(
     if model_id not in model_dict:
         raise ValueError(f"Do not find {name} in the model zoo. List of models: {list(model_dict.keys())}")
     else:
-        model = model_dict[model_id](dataset=dataset, **kwargs)
+        model = model_dict[model_id](dataset=dataset,multitask=multitask, **kwargs)
 
     if model_id in ["l1", "l2"]:
         set_norm_eps(model, 1e-7)
