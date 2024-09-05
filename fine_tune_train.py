@@ -86,7 +86,7 @@ def train_net(args):
     ct = 0
     for child in model.backbone.stages.children():
         ct += 1
-        if 2< ct < 3:
+        if ct == 1:
             for param in child.parameters():
                 param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
