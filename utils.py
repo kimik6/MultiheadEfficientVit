@@ -325,20 +325,21 @@ def valid(mymodel, Dataset,task):
             da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],
             ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
         print(msg2)
+        return da_segment_results[2],ll_segment_results[1]
 
     elif task == 'lane':
         ll_segment_results = val(valLoader, model,task)
         msg2 = '\n lane line detection: Acc({ll_seg_acc:.3f})    IOU ({ll_seg_iou:.3f})    mIOU({ll_seg_miou:.3f})\n'.format(
             ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
         print(msg2)
+        return ll_segment_results[1]
     else:
         da_segment_results = val(valLoader, model,task)
         msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
         da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],)
         print(msg)
+        return da_segment_results[2]
 
-
-    return da_segment_results[2],ll_segment_results[1]
 
 
 def save_checkpoint(state, filenameCheckpoint='checkpoint.pth.tar'):
