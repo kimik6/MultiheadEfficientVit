@@ -28,6 +28,8 @@ def train_net(args):
         ),
 
     ])
+    da_seg_miou=0
+    ll_seg_iou=0
     pretrained = args.pretrained
     engine = args.engine
     if pretrained is not None:
@@ -104,7 +106,14 @@ def train_net(args):
             train(args, source_loader, model,  criteria, optimizer,epoch)
 
         elif args.data == 'IADD':
-            da_seg_miou,ll_seg_iou = valid(model, target_valLoader,args.task)
+            if args.task == 'multi':
+                da_seg_miou,ll_seg_iou = valid(model, target_valLoader,args.task)
+            elif args.task == 'lane':
+                ll_seg_iou = valid(model, target_valLoader,args.task)
+            else:
+                da_seg_miou = valid(model, target_valLoader,args.task)
+
+                
             train(args,target_loader, model, criteria, optimizer, epoch)
 
         logs = {
@@ -133,7 +142,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--max_epochs', type=int, default=10, help='Max. number of epochs')
-    parser.add_argument('--num_workers', type=int, default=12, help='No. of parallel threads')
+    parser.add_argument('--num_workers', type=int, default=0, help='No. of parallel threads')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
                                                                    'Change as per the GPU memory')
     parser.add_argument('--step_loss', type=int, default=100, help='Decrease learning rate after how many epochs.')
