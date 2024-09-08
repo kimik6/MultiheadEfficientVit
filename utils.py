@@ -177,7 +177,7 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
         pbar.set_description(('%13s' * 1 + '%13.4g' * 3) %
                              (f'{epoch}/{args.max_epochs - 1}', tversky_loss_total.avg, focal_loss_total.avg, loss_total.avg))
 @torch.no_grad()
-def val(val_loader, model,multi):
+def val(val_loader, model,task):
     # os.mkdir('/kaggle/working/outputs')
 
     model.eval()
@@ -211,7 +211,7 @@ def val(val_loader, model,multi):
         with torch.no_grad():
             output = model(input_var)
             # output = model(input_var)
-            if multi == 'multi':
+            if task == 'multi':
                 output = (resize(output[0], [512, 512]), resize(output[1], [512, 512]))
                 out_da, out_ll = output
                 target_da, target_ll = target
@@ -244,7 +244,7 @@ def val(val_loader, model,multi):
                 ll_IoU_seg.update(ll_IoU, input.size(0))
                 ll_mIoU_seg.update(ll_mIoU, input.size(0))
                 
-            elif multi == 'lane':
+            elif task == 'lane':
                  output = (resize(output, [512, 512]))
                  out_ll = output
                  _,target_ll = target
@@ -280,11 +280,11 @@ def val(val_loader, model,multi):
                  da_mIoU_seg.update(da_mIoU, input.size(0))             
 
         
-    if multi == ' multi':
+    if task == ' multi':
         da_segment_result = (da_acc_seg.avg, da_IoU_seg.avg, da_mIoU_seg.avg)
         ll_segment_result = (ll_acc_seg.avg, ll_IoU_seg.avg, ll_mIoU_seg.avg)
         return da_segment_result, ll_segment_result
-    elif multi == 'lane':
+    elif task == 'lane':
         ll_segment_result = (ll_acc_seg.avg, ll_IoU_seg.avg, ll_mIoU_seg.avg)
         return ll_segment_result
     else:
@@ -293,7 +293,7 @@ def val(val_loader, model,multi):
 
 
 
-def valid(mymodel, Dataset,multi):
+def valid(mymodel, Dataset,task):
     '''
     Main function for trainign and validation
     :param args: global arguments
@@ -319,8 +319,8 @@ def valid(mymodel, Dataset,multi):
     model.eval()
     example = torch.rand(16, 3, 512, 512).cuda()
     model = torch.jit.trace(model, example)
-    if multi == 'multi':
-        da_segment_results, ll_segment_results = val(valLoader, model)
+    if task == 'multi':
+        da_segment_results, ll_segment_results = val(valLoader, model,task)
         msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
         da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],)
         print(msg)
@@ -329,13 +329,13 @@ def valid(mymodel, Dataset,multi):
             ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
         print(msg2)
 
-    elif multi == 'lane':
-        ll_segment_results = val(valLoader, model)
+    elif task == 'lane':
+        ll_segment_results = val(valLoader, model,task)
         msg2 = '\n lane line detection: Acc({ll_seg_acc:.3f})    IOU ({ll_seg_iou:.3f})    mIOU({ll_seg_miou:.3f})\n'.format(
             ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
         print(msg2)
     else:
-        da_segment_results = val(valLoader, model)
+        da_segment_results = val(valLoader, model,task)
         msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
         da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],)
         print(msg)
