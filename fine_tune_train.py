@@ -80,7 +80,7 @@ def train_net(args):
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
     target_loader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='IADD'),
+        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
     
     # for param in model.backbone.input_stem.parameters():
@@ -101,9 +101,15 @@ def train_net(args):
             lr = param_group['lr']
         print("Learning rate: " + str(lr))
         # train for one epoch
+
+        train(args,target_loader, model, criteria, optimizer, epoch)
         if args.data == 'bdd':
-            da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task)
-            train(args, source_loader, model,  criteria, optimizer,epoch)
+            if args.task == 'multi':
+                da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task)
+            elif args.task == 'lane':
+                ll_seg_iou = valid(model, source_valLoader,args.task)
+            elif args.task == 'drivable':
+                da_seg_miou = valid(model, source_valLoader,args.task)
 
         elif args.data == 'IADD':
             if args.task == 'multi':
@@ -114,7 +120,7 @@ def train_net(args):
                 da_seg_miou = valid(model, target_valLoader,args.task)
 
                 
-            train(args,target_loader, model, criteria, optimizer, epoch)
+            
 
         logs = {
             "epoch": epoch,
