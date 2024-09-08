@@ -312,7 +312,7 @@ def valid(mymodel, Dataset,task):
 
     #     model.load_state_dict(torch.load(PATH))
     model.eval()
-    example = torch.rand(16, 3, 512, 512).cuda()
+    example = torch.rand(32, 3, 512, 512).cuda()
     model = torch.jit.trace(model, example)
     if task == 'multi':
         da_segment_results, ll_segment_results = val(valLoader, model,task)
