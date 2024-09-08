@@ -201,12 +201,7 @@ def val(val_loader, model,task):
         # target = target.cuda()
 
         input_var = input
-        DA.reset()
-        DA.addBatch(da_predict.cpu(), da_gt.cpu())
 
-        da_acc = DA.pixelAccuracy()
-        da_IoU = DA.IntersectionOverUnion()
-        da_mIoU = DA.meanIntersectionOverUnion()
 
         with torch.no_grad():
             output = model(input_var)
