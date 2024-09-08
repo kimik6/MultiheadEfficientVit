@@ -145,7 +145,15 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
             labels[1] = labels[1].cuda()
 
         train_output = model(train_input)
-        train_output_resized = (resize(train_output[0], [512, 512]), resize(train_output[1], [512, 512]))
+        if args.task == 'multi':
+            train_output_resized = (resize(train_output[0], [512, 512]), resize(train_output[1], [512, 512]))
+
+        elif args.task == 'lane':
+            train_output_resized = (resize(train_output, [512, 512]))
+            labels = labels[1]
+        else:
+            train_output_resized = (resize(train_output, [512, 512]))
+            labels = labels[0]
 
         focal_loss, tversky_loss, loss = criterion(train_output_resized, labels)
         loss_total.update(loss,args.batch_size)
