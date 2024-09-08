@@ -110,7 +110,7 @@ def train_net(args):
                 da_seg_miou,ll_seg_iou = valid(model, target_valLoader,args.task)
             elif args.task == 'lane':
                 ll_seg_iou = valid(model, target_valLoader,args.task)
-            else:
+            elif args.task == 'drivable':
                 da_seg_miou = valid(model, target_valLoader,args.task)
 
                 
