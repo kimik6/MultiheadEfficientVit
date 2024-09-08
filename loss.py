@@ -45,14 +45,14 @@ class TotalLoss(nn.Module):
             tversky_loss = self.seg_tver_da(out_da, seg_da) + self.seg_tver_ll(out_ll, seg_ll)
             focal_loss = self.seg_focal(out_ll, seg_ll) + self.seg_focal(out_da, seg_da)
         elif task == 'lane':
-            _,seg_ll = targets
+            seg_ll = targets
             out_ll = outputs
             _, seg_ll = torch.max(seg_ll, 1)
             seg_ll = seg_ll
             tversky_loss = self.seg_tver_ll(out_ll, seg_ll)
             focal_loss = self.seg_focal(out_ll, seg_ll)
         else:
-            seg_da,_ = targets
+            seg_da = targets
             out_da = outputs
             _, seg_da = torch.max(seg_da, 1)
             seg_da = seg_da
