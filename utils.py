@@ -275,7 +275,7 @@ def val(val_loader, model,task):
                  da_mIoU_seg.update(da_mIoU, input.size(0))             
 
         
-    if task == ' multi':
+    if task == 'multi':
         da_segment_result = (da_acc_seg.avg, da_IoU_seg.avg, da_mIoU_seg.avg)
         ll_segment_result = (ll_acc_seg.avg, ll_IoU_seg.avg, ll_mIoU_seg.avg)
         return da_segment_result, ll_segment_result
