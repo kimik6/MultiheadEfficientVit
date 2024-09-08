@@ -155,7 +155,7 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
             train_output_resized = (resize(train_output, [512, 512]))
             labels = labels[0]
 
-        focal_loss, tversky_loss, loss = criterion(train_output_resized, labels)
+        focal_loss, tversky_loss, loss = criterion(train_output_resized, labels, args.task)
         loss_total.update(loss,args.batch_size)
         tversky_loss_total.update(tversky_loss,args.batch_size)
         focal_loss_total.update(focal_loss,args.batch_size)
