@@ -34,8 +34,7 @@ class TotalLoss(nn.Module):
         # self.seg_criterion3 = FocalLossSeg(mode="multiclass", alpha=1)
 
     def forward(self, outputs, targets,task):
-        seg_da, seg_ll = targets
-        out_da, out_ll = outputs
+
         if task == 'multi':
             seg_da, seg_ll = targets
             out_da, out_ll = outputs
