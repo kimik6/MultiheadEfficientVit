@@ -85,12 +85,12 @@ def train_net(args):
     
     for param in model.backbone.input_stem.parameters():
         param.requires_grad = False
-    ct = 0
-    for child in model.backbone.stages.children():
-        ct += 1
-        if ct == 5:
-            for param in child.parameters():
-                param.requires_grad = False
+    # ct = 0
+    # for child in model.backbone.stages.children():
+    #     ct += 1
+    #     if ct == 5:
+    #         for param in child.parameters():
+    #             param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
 
         model_file_name = args.savedir + os.sep + 'model_{}.pth'.format(epoch)
