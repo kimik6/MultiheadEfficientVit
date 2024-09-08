@@ -129,7 +129,7 @@ class MyDataset(torch.utils.data.Dataset):
     '''
     Class to load the dataset
     '''
-    def __init__(self, transform=None,valid=False,engin='kaggle',data='bdd'):
+    def __init__(self, transform=None,valid=False,engin='kaggle',data='bdd',task='multi',data_path=None):
         '''
         :param imList: image list (Note that these lists have been processed and pickled using the loadData.py)
         :param labelList: label list (Note that these lists have been processed and pickled using the loadData.py)
@@ -141,6 +141,8 @@ class MyDataset(torch.utils.data.Dataset):
         self.valid = valid
         self.engin = engin
         self.data = data
+        self.task = task
+        self.data_path = data_path
 
         if self.data == 'bdd':
             if self.engin == 'kaggle': #bdd dataset on kaggle engine
@@ -149,7 +151,7 @@ class MyDataset(torch.utils.data.Dataset):
                     self.names = os.listdir(self.root)
                 else:
                     self.root = '/kaggle/input/bdd100k-dataset/bdd100k/bdd100k/images/100k/train'
-                    self.names = os.listdir(self.root)[:1500]  # [:1000]
+                    self.names = os.listdir(self.root) #[:1500]  # [:1000]
             else:                       #bdd dataset on colab engine
                 if valid:
                     self.root = '/content/data/bdd100k/bdd100k/images/100k/val'
@@ -165,14 +167,13 @@ class MyDataset(torch.utils.data.Dataset):
                 else:
                     self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/train/img'
                     self.names = os.listdir(self.root)[:1000]
-            else:                        #IADD dataset on colab engine
-                if valid:
-                    self.root = '/content/IADD/IADD.v7i.coco-segmentation/valid/img'
-                    self.names = os.listdir(self.root)
-                else:
-                    self.root = '/content/IADD/IADD.v7i.coco-segmentation/train/img'
-                    self.names = os.listdir(self.root)#[:1000]
-
+        else:
+            if valid:
+                self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/valid/img'
+                self.names = os.listdir(self.root)
+            else:
+                self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/train/img'
+                self.names = os.listdir(self.root)[:1000]
 
     def __len__(self):
         return len(self.names)
