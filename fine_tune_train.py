@@ -31,9 +31,9 @@ def train_net(args):
     pretrained = args.pretrained
     engine = args.engine
     if pretrained is not None:
-        model = create_seg_model('b0', 'bdd','multi', weight_url=pretrained)
+        model = create_seg_model('b0', 'bdd',args.task, weight_url=pretrained)
     else:
-        model = create_seg_model('b0', 'bdd','multi', False)
+        model = create_seg_model('b0', 'bdd',args.task, False)
 
     args.savedir = args.savedir + '/'
 
@@ -100,11 +100,11 @@ def train_net(args):
         print("Learning rate: " + str(lr))
         # train for one epoch
         if args.data == 'bdd':
-            da_seg_miou,ll_seg_iou = valid(model, source_valLoader)
+            da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task)
             train(args, source_loader, model,  criteria, optimizer,epoch)
 
         elif args.data == 'IADD':
-            da_seg_miou,ll_seg_iou = valid(model, target_valLoader)
+            da_seg_miou,ll_seg_iou = valid(model, target_valLoader,args.task)
             train(args,target_loader, model, criteria, optimizer, epoch)
 
         logs = {
@@ -143,5 +143,6 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained', default='./pretrained/pretrained_bdd.pth', help='Pretrained ESPNetv2 weights.')
     parser.add_argument('--engine', default='kaggle', help='choose youre prefered engine, kaggle or colab.')
     parser.add_argument('--data', default='bdd', help='DA mode or DAST mode?.')
+    parser.add_argument('--task', default='multi', help='"multi" or "lane" or "drivable" segmentation task.')
 
     train_net(parser.parse_args())
