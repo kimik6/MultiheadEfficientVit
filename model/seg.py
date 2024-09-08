@@ -128,7 +128,7 @@ class EfficientViTSeg(nn.Module):
             feed_da = feed_dict.copy()
             drivable = self.head1(feed_da)
 
-            drivable["segout"]
+            return drivable["segout"]
             
 
 def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTSeg:
