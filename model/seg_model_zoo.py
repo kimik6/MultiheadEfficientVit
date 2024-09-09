@@ -12,7 +12,7 @@ from model.seg import (
 from model.nn.norm import set_norm_eps
 from model.utils.network import load_state_dict_from_file
 import torch
-import OrderedDict
+from collections import OrderedDict
 __all__ = ["create_seg_model"]
 
 
