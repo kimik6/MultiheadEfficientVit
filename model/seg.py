@@ -20,6 +20,9 @@ from model.utils import build_kwargs_from_config
 __all__ = [
     "EfficientViTSeg",
     "efficientvit_seg_b0",
+    "efficientvit_seg_b1",
+    "efficientvit_seg_b2",
+    "efficientvit_seg_b3",
 ]
 
 
@@ -162,7 +165,121 @@ def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTS
             n_classes=2,
             **build_kwargs_from_config(kwargs, SegHead),
         )
+    
+    else:
+        raise NotImplementedError
+    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    return model
 
+def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b1
+
+    backbone = efficientvit_backbone_b1(**kwargs)
+    if dataset == "bdd":
+        head1 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+        head2 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+    
+    else:
+        raise NotImplementedError
+    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    return model
+
+
+def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b2
+
+    backbone = efficientvit_backbone_b2(**kwargs)
+
+    if dataset == "bdd":
+        head1 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+        head2 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+    
+    else:
+        raise NotImplementedError
+    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    return model
+
+
+def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b3
+
+    backbone = efficientvit_backbone_b3(**kwargs)
+    if dataset == "bdd":
+        head1 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+        head2 = SegHead(
+            fid_list=["stage4", "stage3", "stage2"],
+            in_channel_list=[128, 64, 32],
+            stride_list=[32, 16, 8],
+            head_stride=8,
+            head_width=32,
+            head_depth=1,
+            expand_ratio=4,
+            middle_op="mbconv",
+            final_expand=4,
+            n_classes=2,
+            **build_kwargs_from_config(kwargs, SegHead),
+        )
+    
     else:
         raise NotImplementedError
     model = EfficientViTSeg(backbone, head1, head2,multitask)
