@@ -79,7 +79,8 @@ class SegHead(DAGBlock):
             middle.append(ResidualBlock(block, IdentityLayer()))
         middle = OpSequential(middle)
 
-        outputs = OpSequential(
+        outputs = {
+            "segout": OpSequential(
                 [
                     None
                     if final_expand is None
@@ -95,7 +96,7 @@ class SegHead(DAGBlock):
                     ),
                 ]
             )
-        
+        }
 
         super(SegHead, self).__init__(inputs, "add", None, middle=middle, outputs=outputs)
 
