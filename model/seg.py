@@ -178,11 +178,11 @@ def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     if dataset == "bdd":
         head1 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[256, 128, 64],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=64,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
@@ -191,11 +191,11 @@ def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
         )
         head2 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[256, 128, 64],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=64,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
@@ -217,11 +217,11 @@ def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     if dataset == "bdd":
         head1 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[384, 192, 96],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=96,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
@@ -230,11 +230,11 @@ def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
         )
         head2 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[384, 192, 96],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=96,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
@@ -255,11 +255,11 @@ def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     if dataset == "bdd":
         head1 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[512, 256, 128],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=128,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
@@ -268,11 +268,11 @@ def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
         )
         head2 = SegHead(
             fid_list=["stage4", "stage3", "stage2"],
-            in_channel_list=[128, 64, 32],
+            in_channel_list=[512, 256, 128],
             stride_list=[32, 16, 8],
             head_stride=8,
-            head_width=32,
-            head_depth=1,
+            head_width=128,
+            head_depth=3,
             expand_ratio=4,
             middle_op="mbconv",
             final_expand=4,
