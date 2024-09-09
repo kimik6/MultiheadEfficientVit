@@ -57,7 +57,7 @@ def create_seg_model(
                 weight = load_state_dict_from_file(weight_url)
                 model.load_state_dict(weight)
         else:
-            weights= torch.load(backbone_weight_url)['state_dict']
+            weights= load_state_dict_from_file(backbone_weight_url)
             backbone_weights = OrderedDict()
             for w in weights.keys():
                 if 'backbone' in w:
