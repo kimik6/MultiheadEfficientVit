@@ -86,8 +86,8 @@ def train_net(args):
         myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
     
-    for param in model.backbone.input_stem.parameters():
-        param.requires_grad = False
+    # for param in model.backbone.input_stem.parameters():
+    #     param.requires_grad = False
     # ct = 0
     # for child in model.backbone.stages.children():
     #     ct += 1
