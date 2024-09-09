@@ -172,7 +172,7 @@ def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTS
     return model
 
 def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
-    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b1
+    from model.backbone import efficientvit_backbone_b1
 
     backbone = efficientvit_backbone_b1(**kwargs)
     if dataset == "bdd":
@@ -210,7 +210,7 @@ def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
 
 
 def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
-    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b2
+    from model.backbone import efficientvit_backbone_b2
 
     backbone = efficientvit_backbone_b2(**kwargs)
 
@@ -249,7 +249,7 @@ def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
 
 
 def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
-    from efficientvit.models.efficientvit.backbone import efficientvit_backbone_b3
+    from model.backbone import efficientvit_backbone_b3
 
     backbone = efficientvit_backbone_b3(**kwargs)
     if dataset == "bdd":
