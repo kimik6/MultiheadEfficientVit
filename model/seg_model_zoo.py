@@ -11,7 +11,8 @@ from model.seg import (
 )
 from model.nn.norm import set_norm_eps
 from model.utils.network import load_state_dict_from_file
-
+import torch
+import OrderedDict
 __all__ = ["create_seg_model"]
 
 
@@ -27,7 +28,9 @@ REGISTERED_SEG_MODEL: dict[str, dict[str, str]] = {
 
 
 def create_seg_model(
-    name: str, dataset: str, multitask: str, pretrained=True, just_bb=False, weight_url: str or None = None, **kwargs
+    name: str, dataset: str, multitask: str, pretrained=True, 
+    backbone_weight_url:str or None =None, 
+    weight_url: str or None = None, **kwargs
 ) -> EfficientViTSeg:
     model_dict = {
         "b0": efficientvit_seg_b0,
@@ -46,7 +49,7 @@ def create_seg_model(
         set_norm_eps(model, 1e-7)
 
     if pretrained:
-        if not just_bb:
+        if backbone_weight_url is not None:
             weight_url = weight_url or REGISTERED_SEG_MODEL[dataset].get(name, None)
             if weight_url is None:
                 raise ValueError(f"Do not find the pretrained weight of {name}.")
@@ -54,5 +57,14 @@ def create_seg_model(
                 weight = load_state_dict_from_file(weight_url)
                 model.load_state_dict(weight)
         else:
-            pass
+            weights= torch.load(backbone_weight_url)['state_dict']
+            backbone_weights = OrderedDict()
+            for w in weights.keys():
+                if 'backbone' in w:
+                    weight=weights[w]
+                    w=w.replace('backbone.','')
+                    backbone_weights[w]=weight
+
+            model.backbone.load_state_dict(backbone_weights)
+
     return model

@@ -31,11 +31,14 @@ def train_net(args):
     da_seg_miou=0
     ll_seg_iou=0
     pretrained = args.pretrained
+    backbone_weight_url = args.backbone_weight_url ,
     engine = args.engine
     if pretrained is not None:
-        model = create_seg_model('b0', 'bdd',args.task, weight_url=pretrained)
+        model = create_seg_model(args.model, 'bdd',args.task,weight_url=pretrained)
+    elif backbone_weight_url is not None:
+        model = create_seg_model(args.model, 'bdd',args.task,backbone_weight_url=backbone_weight_url)
     else:
-        model = create_seg_model('b0', 'bdd',args.task, False)
+        model = create_seg_model(args.model, 'bdd',args.task, False)
 
     args.savedir = args.savedir + '/'
 
@@ -147,6 +150,8 @@ def train_net(args):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--model', type=str, default='b0', help='Choose between b0, b1, b2 or b3 efficientVit backbones')
+    parser.add_argument('--backbone_weight_url', type=str, default=None, help='input the backbone weights path for your selected model')
     parser.add_argument('--max_epochs', type=int, default=10, help='Max. number of epochs')
     parser.add_argument('--num_workers', type=int, default=0, help='No. of parallel threads')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
