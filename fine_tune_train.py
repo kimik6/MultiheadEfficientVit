@@ -56,9 +56,6 @@ def train_net(args):
     start_epoch = 0
     lr = args.lr
 
-    optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
-
-    optimizer.zero_grad()
 
     if args.resume:
         if os.path.isfile(args.resume):
@@ -73,6 +70,9 @@ def train_net(args):
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
 
+    optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
+
+    optimizer.zero_grad()
 
     target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
 
