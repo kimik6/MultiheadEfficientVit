@@ -312,8 +312,8 @@ def valid(mymodel, Dataset,task):
 
     #     model.load_state_dict(torch.load(PATH))
     model.eval()
-    example = torch.rand(32, 3, 512, 512).cuda()
-    model = torch.jit.trace(model, example)
+    # example = torch.rand(32, 3, 512, 512).cuda()
+    # model = torch.jit.trace(model, example)
     if task == 'multi':
         da_segment_results, ll_segment_results = val(valLoader, model,task)
         msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
