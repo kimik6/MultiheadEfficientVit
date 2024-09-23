@@ -288,7 +288,7 @@ def val(val_loader, model,task):
 
 
 
-def valid(mymodel, Dataset,task,model):
+def valid(mymodel, Dataset,task, backbone):
     '''
     Main function for trainign and validation
     :param args: global arguments
@@ -302,7 +302,7 @@ def valid(mymodel, Dataset,task,model):
         model = torch.nn.DataParallel(model)
         model = model.cuda()
         cudnn.benchmark = True
-    if model == 'b0' or model == 'b1':
+    if backbone == 'b0' or model == 'b1':
         valLoader = torch.utils.data.DataLoader(
             Dataset,
             batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
