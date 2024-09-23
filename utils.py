@@ -306,7 +306,7 @@ def valid(mymodel, Dataset,task,model):
         valLoader = torch.utils.data.DataLoader(
             Dataset,
             batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
-    elif model == 'b2':
+    else:
         valLoader = torch.utils.data.DataLoader(
             Dataset,
             batch_size=8, shuffle=False, num_workers=1, pin_memory=True)        
