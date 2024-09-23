@@ -49,7 +49,7 @@ def create_seg_model(
         set_norm_eps(model, 1e-7)
 
     if pretrained:
-        if backbone_weight_url is not None:
+        if backbone_weight_url is None:
             weight_url = weight_url or REGISTERED_SEG_MODEL[dataset].get(name, None)
             if weight_url is None:
                 raise ValueError(f"Do not find the pretrained weight of {name}.")
