@@ -49,22 +49,22 @@ def create_seg_model(
         set_norm_eps(model, 1e-7)
 
     if pretrained:
-        if backbone_weight_url is None:
-            weight_url = weight_url or REGISTERED_SEG_MODEL[dataset].get(name, None)
+        # if backbone_weight_url is None:
+            # weight_url = weight_url or REGISTERED_SEG_MODEL[dataset].get(name, None)
             if weight_url is None:
                 raise ValueError(f"Do not find the pretrained weight of {name}.")
             else:
                 weight = load_state_dict_from_file(weight_url)
                 model.load_state_dict(weight)
-        else:
-            weights= load_state_dict_from_file(backbone_weight_url)
-            backbone_weights = OrderedDict()
-            for w in weights.keys():
-                if 'backbone' in w:
-                    weight=weights[w]
-                    w=w.replace('backbone.','')
-                    backbone_weights[w]=weight
+        # else:
+        #     weights= load_state_dict_from_file(backbone_weight_url)
+        #     backbone_weights = OrderedDict()
+        #     for w in weights.keys():
+        #         if 'backbone' in w:
+        #             weight=weights[w]
+        #             w=w.replace('backbone.','')
+        #             backbone_weights[w]=weight
 
-            model.backbone.load_state_dict(backbone_weights)
+        #     model.backbone.load_state_dict(backbone_weights)
 
     return model
