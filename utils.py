@@ -302,11 +302,14 @@ def valid(mymodel, Dataset,task,model):
         model = torch.nn.DataParallel(model)
         model = model.cuda()
         cudnn.benchmark = True
-
-    valLoader = torch.utils.data.DataLoader(
-        Dataset,
-        batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
-
+    if model == 'b0' or model == 'b1':
+        valLoader = torch.utils.data.DataLoader(
+            Dataset,
+            batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
+    elif model == 'b2':
+        valLoader = torch.utils.data.DataLoader(
+            Dataset,
+            batch_size=8, shuffle=False, num_workers=1, pin_memory=True)        
     total_paramters = netParams(model)
     print('Total network parameters: ' + str(total_paramters))
 
