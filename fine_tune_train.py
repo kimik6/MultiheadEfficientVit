@@ -36,7 +36,7 @@ def train_net(args):
     if pretrained is not None:
         model = create_seg_model(args.model, 'bdd',args.task,weight_url=pretrained)
     elif backbone_weight_url is not None:
-        model = create_seg_model(args.model, 'bdd',args.task,backbone_weight_url=backbone_weight_url)
+        model = create_seg_model(args.model, 'bdd',args.task,backbone_weight_url=backbone_weight_url,weight_url=None)
     else:
         model = create_seg_model(args.model, 'bdd', False)
 
@@ -115,7 +115,7 @@ def train_net(args):
         # train for one epoch
         
         train(args,target_loader, model, criteria, optimizer, epoch)
-        
+
         if args.data == 'bdd':
             if args.task == 'multi':
                 da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
