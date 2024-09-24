@@ -31,13 +31,13 @@ def train_net(args):
     da_seg_miou=0
     ll_seg_iou=0
     pretrained = args.pretrained
-    backbone_weight_url = args.backbone_weight_url ,
+    backbone_weight_url = args.backbone_weight_url
     engine = args.engine
     
     if args.pretrained is not None:
-        model = create_seg_model(args.model, 'bdd',weight_url=pretrained)
-    elif backbone_weight_url is not None:
-        model = create_seg_model(args.model, 'bdd',backbone_weight_url=backbone_weight_url)
+        model = create_seg_model(args.model, 'bdd',weight_url=args.pretrained)
+    elif args.backbone_weight_url is not None:
+        model = create_seg_model(args.model, 'bdd',backbone_weight_url=args.backbone_weight_url)
     else:
         model = create_seg_model(args.model, 'bdd', False)
 
