@@ -17,6 +17,7 @@ import torch.backends.cudnn as cudnn
 from model.seg_model_zoo import create_seg_model
 import pickle
 all_logs=[]
+train_all_logs=[]
 def train_net(args):
     # load the model
     cuda_available = torch.cuda.is_available()
@@ -115,7 +116,7 @@ def train_net(args):
         print("Learning rate: " + str(lr))
         # train for one epoch
         
-        train(args,target_loader, model, criteria, optimizer, epoch)
+        train_logs = train(args,target_loader, model, criteria, optimizer, epoch)
 
         if args.data == 'bdd':
             if args.task == 'multi':
@@ -144,11 +145,12 @@ def train_net(args):
             }
         
         all_logs.append(logs)  # Append the logs for this epoch to the list
-        
+        train_all_logs.append(train_logs)
         # Save all_logs to the pickle file
         with open('fine_tune_eval_logs.pkl', 'wb') as f:
             pickle.dump(all_logs, f)
-
+        with open('fine_tune_train_logs.pkl', 'wb') as f:
+            pickle.dump(train_all_logs, f)
         torch.save(model.state_dict(), model_file_name)
 
         save_checkpoint({
