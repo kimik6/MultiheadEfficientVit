@@ -34,11 +34,11 @@ def train_net(args):
     backbone_weight_url = args.backbone_weight_url ,
     engine = args.engine
     if pretrained is not None:
-        model = create_seg_model(args.model, 'bdd',args.task,None,weight_url=pretrained)
+        model = create_seg_model(args.model, 'bdd',None,weight_url=pretrained)
     elif backbone_weight_url is not None:
-        model = create_seg_model(args.model, 'bdd',args.task,backbone_weight_url=backbone_weight_url,weight_url=None)
+        model = create_seg_model(args.model, 'bdd',backbone_weight_url=backbone_weight_url,weight_url=None)
     else:
-        model = create_seg_model(args.model, 'bdd',args.task, False)
+        model = create_seg_model(args.model, 'bdd', False)
 
     args.savedir = args.savedir + '/'
 
@@ -87,10 +87,16 @@ def train_net(args):
     target_loader = torch.utils.data.DataLoader(
         myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+    model.train()
     if args.model == 'b0':
         for param in model.backbone.input_stem.parameters():
             param.requires_grad = False
-    
+    if args.task == 'lane':
+        for param in model.head1.parameters():
+            param.requires_grad = False
+    elif args.task == 'drivable':
+        for param in model.head2.parameters():
+            param.requires_grad = False
     # ct = 0
     # for child in model.backbone.stages.children():
     #     ct += 1

@@ -102,15 +102,15 @@ class SegHead(DAGBlock):
 
 
 class EfficientViTSeg(nn.Module):
-    def __init__(self, backbone: EfficientViTBackbone or EfficientViTLargeBackbone, head1: SegHead, head2: SegHead, multitask: str) -> None:
+    def __init__(self, backbone: EfficientViTBackbone or EfficientViTLargeBackbone, head1: SegHead, head2: SegHead) -> None:
         super().__init__()
         self.backbone = backbone
         self.head1 = head1
         self.head2 = head2 
-        self.multitask = multitask
+        # self.multitask = multitask
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if self.multitask == 'multi':
+        # if self.multitask == 'multi':
             feed_dict = self.backbone(x)
             feed_da = feed_dict.copy()
             feed_ll = feed_dict.copy()
@@ -119,19 +119,19 @@ class EfficientViTSeg(nn.Module):
 
             return drivable["segout"], lane_line["segout"]
         
-        elif self.multitask == 'lane':
-            feed_dict = self.backbone(x)
-            feed_ll = feed_dict.copy()
-            lane_line = self.head2(feed_ll)
+        # elif self.multitask == 'lane':
+        #     feed_dict = self.backbone(x)
+        #     feed_ll = feed_dict.copy()
+        #     lane_line = self.head2(feed_ll)
 
-            return lane_line["segout"]
+        #     return lane_line["segout"]
         
-        elif self.multitask == 'drivable':
-            feed_dict = self.backbone(x)
-            feed_da = feed_dict.copy()
-            drivable = self.head1(feed_da)
+        # elif self.multitask == 'drivable':
+        #     feed_dict = self.backbone(x)
+        #     feed_da = feed_dict.copy()
+        #     drivable = self.head1(feed_da)
 
-            return drivable["segout"]
+        #     return drivable["segout"]
             
 
 def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTSeg:

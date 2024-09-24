@@ -35,29 +35,22 @@ class TotalLoss(nn.Module):
 
     def forward(self, outputs, targets,task):
 
+        seg_da, seg_ll = targets
+        out_da, out_ll = outputs
+        _, seg_da = torch.max(seg_da, 1)
+        seg_da = seg_da
+        _, seg_ll = torch.max(seg_ll, 1)
+        seg_ll = seg_ll
+
         if task == 'multi':
-            seg_da, seg_ll = targets
-            out_da, out_ll = outputs
-            _, seg_da = torch.max(seg_da, 1)
-            seg_da = seg_da
-            _, seg_ll = torch.max(seg_ll, 1)
-            seg_ll = seg_ll
             tversky_loss = self.seg_tver_da(out_da, seg_da) + self.seg_tver_ll(out_ll, seg_ll)
             focal_loss = self.seg_focal(out_ll, seg_ll) + self.seg_focal(out_da, seg_da)
         elif task == 'lane':
-            seg_ll = targets
-            out_ll = outputs
-            _, seg_ll = torch.max(seg_ll, 1)
-            seg_ll = seg_ll
-            tversky_loss = self.seg_tver_ll(out_ll, seg_ll)
-            focal_loss = self.seg_focal(out_ll, seg_ll)
-        else:
-            seg_da = targets
-            out_da = outputs
-            _, seg_da = torch.max(seg_da, 1)
-            seg_da = seg_da
-            tversky_loss = self.seg_tver_da(out_da, seg_da)
-            focal_loss = self.seg_focal(out_da, seg_da)
+            tversky_loss = 2*self.seg_tver_ll(out_ll, seg_ll)
+            focal_loss = 2*self.seg_focal(out_ll, seg_ll)
+        elif task == 'drivable':
+            tversky_loss = 2*self.seg_tver_da(out_da, seg_da)
+            focal_loss = 2*self.seg_focal(out_da, seg_da)
 
 
         loss = focal_loss + tversky_loss

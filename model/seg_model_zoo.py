@@ -28,7 +28,7 @@ REGISTERED_SEG_MODEL: dict[str, dict[str, str]] = {
 
 
 def create_seg_model(
-    name: str, dataset: str, multitask: str, pretrained=True, 
+    name: str, dataset: str,pretrained=True, 
     backbone_weight_url:str or None =None, 
     weight_url: str or None = None, **kwargs
 ) -> EfficientViTSeg:
@@ -43,7 +43,7 @@ def create_seg_model(
     if model_id not in model_dict:
         raise ValueError(f"Do not find {name} in the model zoo. List of models: {list(model_dict.keys())}")
     else:
-        model = model_dict[model_id](dataset=dataset,multitask=multitask, **kwargs)
+        model = model_dict[model_id](dataset=dataset, **kwargs)
 
     if model_id in ["l1", "l2"]:
         set_norm_eps(model, 1e-7)

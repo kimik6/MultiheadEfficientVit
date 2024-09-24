@@ -145,15 +145,15 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
             labels[1] = labels[1].cuda()
 
         train_output = model(train_input)
-        if args.task == 'multi':
-            train_output_resized = (resize(train_output[0], [512, 512]), resize(train_output[1], [512, 512]))
+        # if args.task == 'multi':
+        train_output_resized = (resize(train_output[0], [512, 512]), resize(train_output[1], [512, 512]))
 
-        elif args.task == 'lane':
-            train_output_resized = (resize(train_output, [512, 512]))
-            labels = labels[1]
-        else:
-            train_output_resized = (resize(train_output, [512, 512]))
-            labels = labels[0]
+        # elif args.task == 'lane':
+        #     train_output_resized = (resize(train_output, [512, 512]))
+        #     labels = labels[1]
+        # else:
+        #     train_output_resized = (resize(train_output, [512, 512]))
+        #     labels = labels[0]
 
         focal_loss, tversky_loss, loss = criterion(train_output_resized, labels, args.task)
         loss_total.update(loss,args.batch_size)
@@ -206,9 +206,10 @@ def val(val_loader, model,task):
         with torch.no_grad():
             output = model(input_var)
             # output = model(input_var)
+            output = (resize(output[0], [512, 512]), resize(output[1], [512, 512]))
+            out_da, out_ll = output
             if task == 'multi':
-                output = (resize(output[0], [512, 512]), resize(output[1], [512, 512]))
-                out_da, out_ll = output
+
                 target_da, target_ll = target
 
                 _, da_gt = torch.max(target_da, 1)
@@ -240,8 +241,8 @@ def val(val_loader, model,task):
                 ll_mIoU_seg.update(ll_mIoU, input.size(0))
                 
             elif task == 'lane':
-                 output = (resize(output, [512, 512]))
-                 out_ll = output
+                #  output = (resize(output, [512, 512]))
+                #  out_ll = output
                  _,target_ll = target
                  _, ll_predict = torch.max(out_ll, 1)
                  _, ll_gt = torch.max(target_ll, 1)
@@ -257,8 +258,8 @@ def val(val_loader, model,task):
                  ll_mIoU_seg.update(ll_mIoU, input.size(0))
             
             else:
-                 output = (resize(output, [512, 512]))
-                 out_da = output 
+                #  output = (resize(output, [512, 512]))
+                #  out_da = output 
                  target_da,_ = target
                  _, da_gt = torch.max(target_da, 1)
                  _, da_predict = torch.max(out_da, 1)   
