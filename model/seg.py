@@ -171,7 +171,7 @@ def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
     model = EfficientViTSeg(backbone, head1, head2)
     return model
 
-def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+def efficientvit_seg_b1(dataset: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b1
 
     backbone = efficientvit_backbone_b1(**kwargs)
@@ -205,11 +205,11 @@ def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     
     else:
         raise NotImplementedError
-    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    model = EfficientViTSeg(backbone, head1, head2)
     return model
 
 
-def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+def efficientvit_seg_b2(dataset: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b2
 
     backbone = efficientvit_backbone_b2(**kwargs)
@@ -244,11 +244,11 @@ def efficientvit_seg_b2(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     
     else:
         raise NotImplementedError
-    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    model = EfficientViTSeg(backbone, head1, head2)
     return model
 
 
-def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
+def efficientvit_seg_b3(dataset: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b3
 
     backbone = efficientvit_backbone_b3(**kwargs)
@@ -282,6 +282,6 @@ def efficientvit_seg_b3(dataset: str,multitask: str, **kwargs) -> EfficientViTSe
     
     else:
         raise NotImplementedError
-    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    model = EfficientViTSeg(backbone, head1, head2)
     return model
 
