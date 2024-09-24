@@ -172,7 +172,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=2e-7, help='Initial learning rate')
     parser.add_argument('--savedir', default='./test_', help='directory to save the results')
     parser.add_argument('--resume', type=str, default='', help='Use this flag to load last checkpoint for training')
-    parser.add_argument('--pretrained',type=str, default='./pretrained/pretrained_bdd.pth', help='Pretrained ESPNetv2 weights.')
+    parser.add_argument('--pretrained',type=str, default=None, help='Pretrained ESPNetv2 weights.')
     parser.add_argument('--engine', default='kaggle', help='choose youre prefered engine, kaggle or colab.')
     parser.add_argument('--data', default='bdd', help='DA mode or DAST mode?.')
     parser.add_argument('--task', default='multi', help='"multi" or "lane" or "drivable" segmentation task.')
