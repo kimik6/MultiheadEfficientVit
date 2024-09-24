@@ -175,7 +175,7 @@ def train(args, data_loader, model, criterion,  optimizer, epoch):
 
         pbar.set_description(('%13s' * 1 + '%13.4g' * 3) %
                              (f'{epoch}/{args.max_epochs - 1}', tversky_loss_total.avg, focal_loss_total.avg, loss_total.avg))
-        return all_logs
+    return all_logs
 
 @torch.no_grad()
 def val(val_loader, model,task):
