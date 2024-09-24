@@ -134,7 +134,7 @@ class EfficientViTSeg(nn.Module):
         #     return drivable["segout"]
             
 
-def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTSeg:
+def efficientvit_seg_b0(dataset: str, **kwargs) -> EfficientViTSeg:
     from model.backbone import efficientvit_backbone_b0
 
     backbone = efficientvit_backbone_b0(**kwargs)
@@ -168,7 +168,7 @@ def efficientvit_seg_b0(dataset: str, multitask: str, **kwargs) -> EfficientViTS
     
     else:
         raise NotImplementedError
-    model = EfficientViTSeg(backbone, head1, head2,multitask)
+    model = EfficientViTSeg(backbone, head1, head2)
     return model
 
 def efficientvit_seg_b1(dataset: str,multitask: str, **kwargs) -> EfficientViTSeg:
