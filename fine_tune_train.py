@@ -113,8 +113,6 @@ def train_net(args):
             lr = param_group['lr']
         print("Learning rate: " + str(lr))
         # train for one epoch
-
-        train(args,target_loader, model, criteria, optimizer, epoch)
         if args.data == 'bdd':
             if args.task == 'multi':
                 da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
@@ -130,6 +128,8 @@ def train_net(args):
                 ll_seg_iou = valid(model, target_valLoader,args.task,args.model)
             elif args.task == 'drivable':
                 da_seg_miou = valid(model, target_valLoader,args.task,args.model)
+
+        train(args,target_loader, model, criteria, optimizer, epoch)
 
                 
             
