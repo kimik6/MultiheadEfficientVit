@@ -34,7 +34,9 @@ def train_net(args):
     backbone_weight_url = args.backbone_weight_url ,
     engine = args.engine
     if pretrained is not None:
-        model = create_seg_model(args.model, 'bdd',None,weight_url=pretrained)
+        model = create_seg_model(args.model, 'bdd',args.task,weight_url=pretrained)
+    elif backbone_weight_url is not None:
+        model = create_seg_model(args.model, 'bdd',args.task,backbone_weight_url=backbone_weight_url)
     else:
         model = create_seg_model(args.model, 'bdd', False)
 
