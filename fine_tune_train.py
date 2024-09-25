@@ -147,9 +147,9 @@ def train_net(args):
         all_logs.append(logs)  # Append the logs for this epoch to the list
         train_all_logs.append(train_logs)
         # Save all_logs to the pickle file
-        with open('fine_tune_eval_logs.pkl', 'wb') as f:
+        with open('test2_/fine_tune_eval_logs.pkl', 'wb') as f:
             pickle.dump(all_logs, f)
-        with open('fine_tune_train_logs.pkl', 'wb') as f:
+        with open('test2_/fine_tune_train_logs.pkl', 'wb') as f:
             pickle.dump(train_all_logs, f)
         torch.save(model.state_dict(), model_file_name)
 
