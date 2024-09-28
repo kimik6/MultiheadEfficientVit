@@ -89,16 +89,7 @@ def train_net(args):
     target_loader = torch.utils.data.DataLoader(
         myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
         batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
-    model.train()
-    if args.model == 'b0':
-        for param in model.backbone.input_stem.parameters():
-            param.requires_grad = False
-    if args.task == 'lane':
-        for param in model.head1.parameters():
-            param.requires_grad = False
-    elif args.task == 'drivable':
-        for param in model.head2.parameters():
-            param.requires_grad = False
+
     # ct = 0
     # for child in model.backbone.stages.children():
     #     ct += 1
@@ -106,6 +97,17 @@ def train_net(args):
     #         for param in child.parameters():
     #             param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
+
+        model.train()
+        if args.model == 'b0':
+            for param in model.backbone.input_stem.parameters():
+                param.requires_grad = False
+        if args.task == 'lane':
+            for param in model.head1.parameters():
+                param.requires_grad = False
+        elif args.task == 'drivable':
+            for param in model.head2.parameters():
+                param.requires_grad = False
 
         model_file_name = args.savedir + os.sep + 'model_{}.pth'.format(epoch)
 
