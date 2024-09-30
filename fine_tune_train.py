@@ -55,7 +55,7 @@ def train_net(args):
         cudnn.benchmark = True
 
     criteria = TotalLoss(device=args.device)
-    start_epoch = 0
+    start_epoch = args.start_epoch
     lr = args.lr
 
     # optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
@@ -169,6 +169,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='b0', help='Choose between b0, b1, b2 or b3 efficientVit backbones')
     parser.add_argument('--backbone_weight_url', type=str, default=None, help='input the backbone weights path for your selected model')
     parser.add_argument('--max_epochs', type=int, default=10, help='Max. number of epochs')
+    parser.add_argument('--start_epoch', type=int, default=0, help='start epoch')
     parser.add_argument('--num_workers', type=int, default=0, help='No. of parallel threads')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size. 12 for ESPNet-C and 6 for ESPNet. '
                                                                    'Change as per the GPU memory')
