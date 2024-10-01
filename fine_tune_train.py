@@ -98,17 +98,6 @@ def train_net(args):
     #             param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
 
-        model.train()
-        # if args.model == 'b0':
-        #     for param in model.backbone.input_stem.parameters():
-        #         param.requires_grad = False
-        if args.task == 'lane':
-            for param in model.head1.parameters():
-                param.requires_grad = False
-        elif args.task == 'drivable':
-            for param in model.head2.parameters():
-                param.requires_grad = False
-
         model_file_name = args.savedir + os.sep + 'model_{}.pth'.format(epoch)
 
         checkpoint_file_name = args.savedir + os.sep + 'checkpoint_{}.pth.tar'.format(epoch)
@@ -117,9 +106,6 @@ def train_net(args):
             lr = param_group['lr']
         print("Learning rate: " + str(lr))
         # train for one epoch
-        
-        train_logs = train(args,target_loader, model, criteria, optimizer, epoch)
-
         if args.data == 'bdd':
             if args.task == 'multi':
                 da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
@@ -135,6 +121,19 @@ def train_net(args):
                 ll_seg_iou = valid(model, target_valLoader,args.task,args.model)
             elif args.task == 'drivable':
                 da_seg_miou = valid(model, target_valLoader,args.task,args.model)
+        
+        model.train()
+        # if args.model == 'b0':
+        #     for param in model.backbone.input_stem.parameters():
+        #         param.requires_grad = False
+        if args.task == 'lane':
+            for param in model.head1.parameters():
+                param.requires_grad = False
+        elif args.task == 'drivable':
+            for param in model.head2.parameters():
+                param.requires_grad = False
+        train_logs = train(args,target_loader, model, criteria, optimizer, epoch)
+
 
 
                 
