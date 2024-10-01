@@ -99,9 +99,9 @@ def train_net(args):
     for epoch in range(start_epoch, args.max_epochs):
 
         model.train()
-        if args.model == 'b0':
-            for param in model.backbone.input_stem.parameters():
-                param.requires_grad = False
+        # if args.model == 'b0':
+        #     for param in model.backbone.input_stem.parameters():
+        #         param.requires_grad = False
         if args.task == 'lane':
             for param in model.head1.parameters():
                 param.requires_grad = False
