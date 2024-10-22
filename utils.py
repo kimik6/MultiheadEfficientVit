@@ -459,3 +459,176 @@ def plot_the_last_epoch(batch,segmentations):
         img_det2 = show_seg_result(vis_input * 255, (vis_label1, vis_label2), 0, 0, is_demo=True)
 
         show_grays([img_det1, img_det2])
+
+        @torch.no_grad()
+def val(val_loader, model,task):
+    # os.mkdir('/kaggle/working/outputs')
+
+    model.eval()
+
+    DA = SegmentationMetric(2)
+    LL = SegmentationMetric(2)
+
+    da_acc_seg = AverageMeter()
+    da_IoU_seg = AverageMeter()
+    da_mIoU_seg = AverageMeter()
+
+    ll_acc_seg = AverageMeter()
+    ll_IoU_seg = AverageMeter()
+    ll_mIoU_seg = AverageMeter()
+
+    total_batches = len(val_loader)
+    pbar = enumerate(val_loader)
+    pbar = tqdm(pbar, total=total_batches)
+    for i, (_, input, target) in pbar:
+        input = input.cuda().float()
+        # target = target.cuda()
+
+        input_var = input
+
+
+        with torch.no_grad():
+#             _,out_da, out_ll = model(input_var)
+            out_da, out_ll = model(input_var)
+            out_da = (resize(out_da, [512, 512]))
+            out_ll = (resize(out_ll, [512, 512]))
+#             # output = model(input_var)
+#             output = (resize(output[0], [512, 512]), resize(output[1], [512, 512]))
+#             out_da, out_ll = output
+            if task == 'multi':
+
+                target_da, target_ll = target
+
+                _, da_gt = torch.max(target_da, 1)
+                _, da_predict = torch.max(out_da, 1)
+
+                _, ll_predict = torch.max(out_ll, 1)
+                _, ll_gt = torch.max(target_ll, 1)
+
+                DA.reset()
+                DA.addBatch(da_predict.cpu(), da_gt.cpu())
+
+                da_acc = DA.pixelAccuracy()
+                da_IoU = DA.IntersectionOverUnion()
+                da_mIoU = DA.meanIntersectionOverUnion()
+
+                da_acc_seg.update(da_acc, input.size(0))
+                da_IoU_seg.update(da_IoU, input.size(0))
+                da_mIoU_seg.update(da_mIoU, input.size(0))
+
+                LL.reset()
+                LL.addBatch(ll_predict.cpu(), ll_gt.cpu())
+
+                ll_acc = LL.pixelAccuracy()
+                ll_IoU = LL.IntersectionOverUnion()
+                ll_mIoU = LL.meanIntersectionOverUnion()
+
+                ll_acc_seg.update(ll_acc, input.size(0))
+                ll_IoU_seg.update(ll_IoU, input.size(0))
+                ll_mIoU_seg.update(ll_mIoU, input.size(0))
+                
+            elif task == 'lane':
+                #  output = (resize(output, [512, 512]))
+                #  out_ll = output
+                 _,target_ll = target
+                 _, ll_predict = torch.max(out_ll, 1)
+#                  _, ll_gt = torch.max(target_ll, 1)
+                 target_ll.argmax(0)
+                 LL.reset()
+                 LL.addBatch(ll_predict.cpu(), target_ll.cpu())
+
+                 ll_acc = LL.pixelAccuracy()
+                 ll_IoU = LL.IntersectionOverUnion()
+                 ll_mIoU = LL.meanIntersectionOverUnion()
+
+                 ll_acc_seg.update(ll_acc, input.size(0))
+                 ll_IoU_seg.update(ll_IoU, input.size(0))
+                 ll_mIoU_seg.update(ll_mIoU, input.size(0))
+            
+            else:
+                #  output = (resize(output, [512, 512]))
+                #  out_da = output 
+                 target_da,_ = target
+                 _, da_gt = torch.max(target_da, 1)
+                 _, da_predict = torch.max(out_da, 1)   
+                
+                 DA.reset()
+                 DA.addBatch(da_predict.cpu(), da_gt.cpu())
+
+                 da_acc = DA.pixelAccuracy()
+                 da_IoU = DA.IntersectionOverUnion()
+                 da_mIoU = DA.meanIntersectionOverUnion()
+
+                 da_acc_seg.update(da_acc, input.size(0))
+                 da_IoU_seg.update(da_IoU, input.size(0))
+                 da_mIoU_seg.update(da_mIoU, input.size(0))             
+
+        
+    if task == 'multi':
+        da_segment_result = (da_acc_seg.avg, da_IoU_seg.avg, da_mIoU_seg.avg)
+        ll_segment_result = (ll_acc_seg.avg, ll_IoU_seg.avg, ll_mIoU_seg.avg)
+        return da_segment_result, ll_segment_result
+    elif task == 'lane':
+        ll_segment_result = (ll_acc_seg.avg, ll_IoU_seg.avg, ll_mIoU_seg.avg)
+        return ll_segment_result
+    else:
+        da_segment_result = (da_acc_seg.avg, da_IoU_seg.avg, da_mIoU_seg.avg)
+        return da_segment_result
+
+
+
+def valid0(mymodel, Dataset,task, backbone):
+    '''
+    Main function for trainign and validation
+    :param args: global arguments
+    :return: None
+    '''
+
+    # load the model
+    model = mymodel.eval()
+    cuda_available = torch.cuda.is_available()
+    if cuda_available:
+        model = torch.nn.DataParallel(model)
+        model = model.cuda()
+        cudnn.benchmark = True
+    if backbone == 'b0' or model == 'b1':
+        valLoader = torch.utils.data.DataLoader(
+            Dataset,
+            batch_size=32, shuffle=False, num_workers=1, pin_memory=True)
+    else:
+        valLoader = torch.utils.data.DataLoader(
+            Dataset,
+            batch_size=8, shuffle=False, num_workers=1, pin_memory=True)        
+    total_paramters = netParams(model)
+    print('Total network parameters: ' + str(total_paramters))
+
+    #     model.load_state_dict(torch.load(PATH))
+    model.eval()
+    if model == 'b0':
+        example = torch.rand(32, 3, 512, 512).cuda()
+        model = torch.jit.trace(model, example)
+    if task == 'multi':
+        da_segment_results, ll_segment_results = val(valLoader, model,task)
+        msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
+        da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],
+        ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
+        print(msg)
+
+        msg2 = '\n lane line detection: Acc({ll_seg_acc:.3f})    IOU ({ll_seg_iou:.3f})    mIOU({ll_seg_miou:.3f})\n'.format(
+            da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],
+            ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
+        print(msg2)
+        return da_segment_results[2],ll_segment_results[1]
+
+    elif task == 'lane':
+        ll_segment_results = val(valLoader, model,task)
+        msg2 = '\n lane line detection: Acc({ll_seg_acc:.3f})    IOU ({ll_seg_iou:.3f})    mIOU({ll_seg_miou:.3f})\n'.format(
+            ll_seg_acc=ll_segment_results[0], ll_seg_iou=ll_segment_results[1], ll_seg_miou=ll_segment_results[2])
+        print(msg2)
+        return ll_segment_results[1]
+    elif task == 'drivable':
+        da_segment_results = val(valLoader, model,task)
+        msg = '\n Driving area Segment: Acc({da_seg_acc:.3f})    IOU ({da_seg_iou:.3f})    mIOU({da_seg_miou:.3f})\n'.format(
+        da_seg_acc=da_segment_results[0], da_seg_iou=da_segment_results[1], da_seg_miou=da_segment_results[2],)
+        print(msg)
+        return da_segment_results[2]
