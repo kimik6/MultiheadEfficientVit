@@ -39,7 +39,7 @@ class TotalLoss(nn.Module):
         out_da, out_ll = outputs
         _, seg_da = torch.max(seg_da, 1)
         seg_da = seg_da
-        _, seg_ll = torch.max(seg_ll, 1)
+        # _, seg_ll = torch.max(seg_ll, 1)
         seg_ll = seg_ll
 
         if task == 'multi':
