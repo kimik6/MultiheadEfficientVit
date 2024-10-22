@@ -77,19 +77,26 @@ def train_net(args):
     optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
 
     optimizer.zero_grad()
+    if args.data == 'bdd':
 
-    target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
+        target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
 
-    source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
+        source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
 
-    source_loader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
-        batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+        source_loader = torch.utils.data.DataLoader(
+            myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
+            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
-    target_loader = torch.utils.data.DataLoader(
-        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
-        batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+        target_loader = torch.utils.data.DataLoader(
+            myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
+            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+    elif args.data == 'tusimple':
 
+        source_valLoader = myDataLoader.LaneDataset(train=False)
+
+        target_loader = torch.utils.data.DataLoader(
+            myDataLoader.LaneDataset(train=True),
+            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
     # ct = 0
     # for child in model.backbone.stages.children():
     #     ct += 1
