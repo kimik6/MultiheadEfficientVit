@@ -128,6 +128,9 @@ def train_net(args):
                 ll_seg_iou = valid(model, target_valLoader,args.task,args.model)
             elif args.task == 'drivable':
                 da_seg_miou = valid(model, target_valLoader,args.task,args.model)
+
+        else:
+            ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
         
         model.train()
         # if args.model == 'b0':
