@@ -42,6 +42,7 @@ class TotalLoss(nn.Module):
         # _, seg_ll = torch.max(seg_ll, 1)
         seg_ll = seg_ll
         _, out_ll = torch.max(out_ll, 1)
+        out_ll-out_ll.long()
         print('seg label shape = ',seg_ll.shape)
         print('seg output shape = ',out_ll.shape)
 
