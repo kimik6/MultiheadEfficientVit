@@ -577,7 +577,7 @@ def val(val_loader, model,task):
 
 
 
-def valid0(mymodel, Dataset,task, backbone):
+def valid(mymodel, Dataset,task, backbone):
     '''
     Main function for trainign and validation
     :param args: global arguments
