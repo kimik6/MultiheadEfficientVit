@@ -83,9 +83,9 @@ def train_net(args):
 
         # source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
 
-        source_loader = torch.utils.data.DataLoader(
-            myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
-            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+        # source_loader = torch.utils.data.DataLoader(
+        #     myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
+        #     batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
         target_loader = torch.utils.data.DataLoader(
             myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
