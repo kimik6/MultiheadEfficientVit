@@ -41,6 +41,7 @@ class TotalLoss(nn.Module):
         seg_da = seg_da
         # _, seg_ll = torch.max(seg_ll, 1)
         seg_ll = seg_ll
+        out_ll=out_ll[:,1]
 
         if task == 'multi':
             tversky_loss = self.seg_tver_da(out_da, seg_da) + self.seg_tver_ll(out_ll, seg_ll)
