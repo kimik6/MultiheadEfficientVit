@@ -249,7 +249,7 @@ class LaneDataset(torch.utils.data.Dataset):
         self._dataset_path = dataset_path
         self._mode = "train" if train else "eval"
         self._image_size = size # w, h
-        self.Tensor = T.ToTensor()
+        self.Tensor = transforms.ToTensor()
 
         if self._mode == "train":
             label_files = [
