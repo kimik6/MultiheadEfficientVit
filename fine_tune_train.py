@@ -81,7 +81,7 @@ def train_net(args):
 
         target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
 
-        source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
+        # source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
 
         source_loader = torch.utils.data.DataLoader(
             myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
