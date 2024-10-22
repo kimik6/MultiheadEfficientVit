@@ -248,7 +248,7 @@ def val(val_loader, model,task):
                  _, ll_predict = torch.max(out_ll, 1)
                 #  _, ll_gt = torch.max(target_ll, 1)
                  LL.reset()
-                 LL.addBatch(ll_predict.cpu(), ll_gt.cpu())
+                 LL.addBatch(ll_predict.cpu(), target_ll.cpu())
 
                  ll_acc = LL.pixelAccuracy()
                  ll_IoU = LL.IntersectionOverUnion()
