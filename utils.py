@@ -460,7 +460,7 @@ def plot_the_last_epoch(batch,segmentations):
 
         show_grays([img_det1, img_det2])
 
-        @torch.no_grad()
+@torch.no_grad()
 def val(val_loader, model,task):
     # os.mkdir('/kaggle/working/outputs')
 
