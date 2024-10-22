@@ -246,7 +246,7 @@ def val(val_loader, model,task):
                 #  out_ll = output
                  _,target_ll = target
                  _, ll_predict = torch.max(out_ll, 1)
-                 _, ll_gt = torch.max(target_ll, 1)
+                #  _, ll_gt = torch.max(target_ll, 1)
                  LL.reset()
                  LL.addBatch(ll_predict.cpu(), ll_gt.cpu())
 
