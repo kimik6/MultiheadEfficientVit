@@ -77,7 +77,7 @@ def train_net(args):
     optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
 
     optimizer.zero_grad()
-    if args.data == 'bdd':
+    if args.data == 'bdd' or args.data == 'IADD':
 
         target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
 
