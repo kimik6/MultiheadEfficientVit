@@ -34,7 +34,7 @@ def train_net(args):
     pretrained = args.pretrained
     backbone_weight_url = args.backbone_weight_url
     engine = args.engine
-    
+
     if args.pretrained is not None:
         model = create_seg_model(args.model, 'bdd',weight_url=args.pretrained)
     elif args.backbone_weight_url is not None:
@@ -77,26 +77,19 @@ def train_net(args):
     optimizer = torch.optim.Adam(model.parameters(), lr, (0.9, 0.999), eps=1e-08, weight_decay=5e-4)
 
     optimizer.zero_grad()
-    if args.data == 'bdd' or args.data == 'IADD':
 
-        target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
+    target_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='IADD')
 
-        # source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
+    source_valLoader = myDataLoader.MyDataset(transform=transform, valid=True, engin=engine, data='bdd')
 
-        # source_loader = torch.utils.data.DataLoader(
-        #     myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
-        #     batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
+    source_loader = torch.utils.data.DataLoader(
+        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data='bdd'),
+        batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
-        target_loader = torch.utils.data.DataLoader(
-            myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
-            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
-    elif args.data == 'tusimple':
+    target_loader = torch.utils.data.DataLoader(
+        myDataLoader.MyDataset(transform=transform, valid=False, engin=engine, data=args.data),
+        batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
 
-        source_valLoader = myDataLoader.LaneDataset(train=False)
-
-        target_loader = torch.utils.data.DataLoader(
-            myDataLoader.LaneDataset(train=True),
-            batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True, drop_last=True)
     # ct = 0
     # for child in model.backbone.stages.children():
     #     ct += 1
@@ -104,6 +97,17 @@ def train_net(args):
     #         for param in child.parameters():
     #             param.requires_grad = False
     for epoch in range(start_epoch, args.max_epochs):
+
+
+
+
+
+
+
+
+
+
+
 
         model_file_name = args.savedir + os.sep + 'model_{}.pth'.format(epoch)
 
@@ -113,6 +117,9 @@ def train_net(args):
             lr = param_group['lr']
         print("Learning rate: " + str(lr))
         # train for one epoch
+
+
+
         if args.data == 'bdd':
             if args.task == 'multi':
                 da_seg_miou,ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
@@ -128,9 +135,6 @@ def train_net(args):
                 ll_seg_iou = valid(model, target_valLoader,args.task,args.model)
             elif args.task == 'drivable':
                 da_seg_miou = valid(model, target_valLoader,args.task,args.model)
-
-        else:
-            ll_seg_iou = valid(model, source_valLoader,args.task,args.model)
         
         model.train()
         # if args.model == 'b0':
@@ -146,15 +150,15 @@ def train_net(args):
 
 
 
-                
-            
+
+
 
         logs = {
             "epoch": epoch,
             "drivable area miou": da_seg_miou,
             "lane line iou": ll_seg_iou
             }
-        
+
         all_logs.append(logs)  # Append the logs for this epoch to the list
         train_all_logs.append(train_logs)
         # Save all_logs to the pickle file
