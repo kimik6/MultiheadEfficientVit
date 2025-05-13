@@ -130,11 +130,15 @@ class MyDataset(torch.utils.data.Dataset):
     '''
     Class to load the dataset
     '''
-    def __init__(self, transform=None,valid=False,engin='kaggle',data='bdd',task='multi',data_path=None):
+    def __init__(self, transform=None, valid=False, engin='kaggle', data='bdd', task='multi', data_path=None, iadd_oversample_ratio=10):
         '''
-        :param imList: image list (Note that these lists have been processed and pickled using the loadData.py)
-        :param labelList: label list (Note that these lists have been processed and pickled using the loadData.py)
-        :param transform: Type of transformation. SEe Transforms.py for supported transformations
+        :param transform: Type of transformation
+        :param valid: Whether this is validation set
+        :param engin: 'kaggle' or other (e.g., 'colab')
+        :param data: Dataset choice: 'bdd', 'IADD', or 'combined'
+        :param task: Task type
+        :param data_path: Custom data path if provided
+        :param iadd_oversample_ratio: How many times to oversample IADD dataset when in combined mode
         '''
 
         self.transform = transform
@@ -144,107 +148,137 @@ class MyDataset(torch.utils.data.Dataset):
         self.data = data
         self.task = task
         self.data_path = data_path
+        self.iadd_oversample_ratio = iadd_oversample_ratio
 
-        if self.data == 'bdd':
-            if self.engin == 'kaggle': #bdd dataset on kaggle engine
+        # Initialize empty lists
+        self.names = []
+        self.roots = []
+        self.dataset_indicators = []  # 0 for BDD, 1 for IADD
+        
+        # Handle paths for BDD dataset
+        if self.data == 'bdd' or self.data == 'combined':
+            if self.engin == 'kaggle':
                 if valid:
-                    self.root = '/kaggle/input/bdd100k-dataset/bdd100k/bdd100k/images/100k/val'
-                    self.names = os.listdir(self.root)
+                    bdd_root = '/kaggle/input/bdd100k-dataset/bdd100k/bdd100k/images/100k/val'
                 else:
-                    self.root = '/kaggle/input/bdd100k-dataset/bdd100k/bdd100k/images/100k/train'
-                    self.names = os.listdir(self.root)#[:1500]  # [:1000]
-            else:                       #bdd dataset on colab engine
-                if valid:
-                    self.root = '/content/data/bdd100k/bdd100k/images/100k/val'
-                    self.names = os.listdir(self.root)
-                else:
-                    self.root = '/content/data/bdd100k/bdd100k/images/100k/train'
-                    self.names = os.listdir(self.root)#[:1500]
-        elif self.data == 'IADD':
-            if self.engin == 'kaggle':  #IADD dataset on kaggle engine
-                if valid:
-                    self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/valid/img'
-                    self.names = os.listdir(self.root)
-                else:
-                    self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/train/img'
-                    self.names = os.listdir(self.root)[:1000]
-        else:
-            if valid:
-                self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/valid/img'
-                self.names = os.listdir(self.root)
+                    bdd_root = '/kaggle/input/bdd100k-dataset/bdd100k/bdd100k/images/100k/train'
             else:
-                self.root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/train/img'
-                self.names = os.listdir(self.root)[:1000]
+                if valid:
+                    bdd_root = '/content/data/bdd100k/bdd100k/images/100k/val'
+                else:
+                    bdd_root = '/content/data/bdd100k/bdd100k/images/100k/train'
+            
+            bdd_names = os.listdir(bdd_root)
+            self.names.extend(bdd_names)
+            self.roots.extend([bdd_root] * len(bdd_names))
+            self.dataset_indicators.extend([0] * len(bdd_names))
+        
+        # Handle paths for IADD dataset
+        if self.data == 'IADD' or self.data == 'combined':
+            if self.engin == 'kaggle':
+                if valid:
+                    iadd_root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/valid/img'
+                else:
+                    iadd_root = '/kaggle/working/IADD/IADD.v7i.coco-segmentation/train/img'
+            else:
+                if valid:
+                    iadd_root = '/content/IADD/IADD.v7i.coco-segmentation/valid/img'
+                else:
+                    iadd_root = '/content/IADD/IADD.v7i.coco-segmentation/train/img'
+            
+            iadd_names = os.listdir(iadd_root)
+            
+            # For combined mode, oversample IADD dataset to balance with BDD
+            if self.data == 'combined' and not valid:
+                # Create multiple copies of IADD data to balance the datasets
+                self.names.extend(iadd_names * self.iadd_oversample_ratio)
+                self.roots.extend([iadd_root] * len(iadd_names) * self.iadd_oversample_ratio)
+                self.dataset_indicators.extend([1] * len(iadd_names) * self.iadd_oversample_ratio)
+            else:
+                self.names.extend(iadd_names)
+                self.roots.extend([iadd_root] * len(iadd_names))
+                self.dataset_indicators.extend([1] * len(iadd_names))
+    
+        # Print dataset statistics
+        if self.data == 'combined':
+            bdd_count = sum(1 for indicator in self.dataset_indicators if indicator == 0)
+            iadd_count = sum(1 for indicator in self.dataset_indicators if indicator == 1)
+            print(f"BDD samples: {bdd_count}, IADD samples: {iadd_count}, Ratio: {iadd_count/bdd_count:.3f}")
 
     def __len__(self):
         return len(self.names)
 
     def __getitem__(self, idx):
         '''
-
         :param idx: Index of the image file
         :return: returns the image and corresponding label file.
         '''
-        W_=512
-        H_=512
-        image_name=os.path.join(self.root,self.names[idx])
+        W_ = 512
+        H_ = 512
+        
+        # Get image path based on dataset type
+        image_name = os.path.join(self.roots[idx], self.names[idx])
+        dataset_indicator = self.dataset_indicators[idx]  # 0 for BDD, 1 for IADD
 
         image = cv2.imread(image_name)
-        if self.data == 'bdd':
+        
+        # Handle label paths based on dataset type
+        if dataset_indicator == 0:  # BDD
             if self.engin == 'kaggle':
-                label1 = cv2.imread(image_name.replace("input/bdd100k-dataset/bdd100k/bdd100k/images/100k","working/labels/bdd_seg_gt").replace("jpg","png"), 0)
-                label2 = cv2.imread(image_name.replace("input/bdd100k-dataset/bdd100k/bdd100k/images/100k","working/labels/bdd_lane_gt").replace("jpg","png"), 0)
+                label1 = cv2.imread(image_name.replace("input/bdd100k-dataset/bdd100k/bdd100k/images/100k", "working/labels/bdd_seg_gt").replace("jpg", "png"), 0)
+                label2 = cv2.imread(image_name.replace("input/bdd100k-dataset/bdd100k/bdd100k/images/100k", "working/labels/bdd_lane_gt").replace("jpg", "png"), 0)
             else:
                 label1 = cv2.imread(image_name.replace("bdd100k/bdd100k/images/100k", "labels/bdd_seg_gt").replace("jpg", "png"), 0)
                 label2 = cv2.imread(image_name.replace("bdd100k/bdd100k/images/100k", "labels/bdd_lane_gt").replace("jpg", "png"), 0)
-        elif self.data == 'IADD':
-            if self.valid:
-                label1 = cv2.imread(image_name.replace("img", "drivable").replace(".jpg", ".png"), 0)
-                label2 = cv2.imread(image_name.replace("img", "lane").replace(".jpg", ".png"), 0)
-            else:
-                label1 = cv2.imread(image_name.replace("img", "drivable").replace(".jpg", ".png"), 0)
-                label2 = cv2.imread(image_name.replace("img", "lane").replace(".jpg", ".png"), 0)
+        else:  # IADD
+            label1 = cv2.imread(image_name.replace("img", "drivable").replace(".jpg", ".png"), 0)
+            label2 = cv2.imread(image_name.replace("img", "lane").replace(".jpg", ".png"), 0)
 
+        # Data augmentation for training
         if not self.valid:
-            if random.random()<0.5:
+            if random.random() < 0.5:
                 combination = (image, label1, label2)
-                (image, label1, label2)= random_perspective(
+                (image, label1, label2) = random_perspective(
                     combination=combination,
                     degrees=10,
                     translate=0.1,
                     scale=0.25,
                     shear=0.0
                 )
-            if random.random()<0.5:
+            if random.random() < 0.5:
                 augment_hsv(image)
             if random.random() < 0.5:
                 image = np.fliplr(image)
                 label1 = np.fliplr(label1)
                 label2 = np.fliplr(label2)
 
+        # Resize all images and labels
         label1 = cv2.resize(label1, (W_, H_))
         label2 = cv2.resize(label2, (W_, H_))
         image = cv2.resize(image, (W_, H_))
 
-        _,seg_b1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY_INV)
-        _,seg_b2 = cv2.threshold(label2,1,255,cv2.THRESH_BINARY_INV)
-        _,seg1 = cv2.threshold(label1,1,255,cv2.THRESH_BINARY)
-        _,seg2 = cv2.threshold(label2,1,255,cv2.THRESH_BINARY)
+        # Prepare segmentation masks
+        _, seg_b1 = cv2.threshold(label1, 1, 255, cv2.THRESH_BINARY_INV)
+        _, seg_b2 = cv2.threshold(label2, 1, 255, cv2.THRESH_BINARY_INV)
+        _, seg1 = cv2.threshold(label1, 1, 255, cv2.THRESH_BINARY)
+        _, seg2 = cv2.threshold(label2, 1, 255, cv2.THRESH_BINARY)
 
+        # Convert to tensors
         seg1 = self.Tensor(seg1)
         seg2 = self.Tensor(seg2)
         seg_b1 = self.Tensor(seg_b1)
         seg_b2 = self.Tensor(seg_b2)
-        seg_da = torch.stack((seg_b1[0], seg1[0]),0)
-        seg_ll = torch.stack((seg_b2[0], seg2[0]),0)
-        # image = image[:, :, ::-1].transpose(2, 0, 1)
+        seg_da = torch.stack((seg_b1[0], seg1[0]), 0)
+        seg_ll = torch.stack((seg_b2[0], seg2[0]), 0)
+        
         image = np.ascontiguousarray(image)
 
-        if self.transform is not None :
+        if self.transform is not None:
             image = self.transform(image)
 
-        return image_name,image,(seg_da,seg_ll)
+        return image_name, image, (seg_da, seg_ll)
 
+# Keep the LaneDataset class unchanged
 class LaneDataset(torch.utils.data.Dataset):
     def __init__(self, dataset_path="/kaggle/input/tusimple/TUSimple/train_set", train=True, size=(512, 256)):
         self._dataset_path = dataset_path
@@ -274,31 +308,15 @@ class LaneDataset(torch.utils.data.Dataset):
         image_path = os.path.join(self._dataset_path, self._data[idx][0])
         image = cv2.imread(image_path)
         h, w, c = image.shape
-#         image = cv2.resize(image, self._image_size, interpolation=cv2.INTER_LINEAR)
         image = cv2.resize(image, (W_, H_))
-#         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#         image = image[..., None]
         lanes = self._data[idx][1]
 
         segmentation_image = self._draw(h, w, lanes, "segmentation")
-#         instance_image = self._draw(H_, W_, lanes, "instance")
-#         instance_image = cv2.resize(instance_image, (W_, H_))
         segmentation_image = cv2.resize(segmentation_image, (W_, H_))
-
-#         instance_image = instance_image[..., None]
 
         image = torch.from_numpy(image).float().permute((2, 0, 1))
 
-#         _,seg_b1 = cv2.threshold(segmentation_image,1,255,cv2.THRESH_BINARY_INV)    
-#         _,seg1 = cv2.threshold(segmentation_image,1,255,cv2.THRESH_BINARY)
-
-        
-#         segmentation_image = self.Tensor(segmentation_image)
-
-#         seg_b1 = self.Tensor(seg_b1)
-
-#         seg_ll = torch.stack((segmentation_image, segmentation_image),0)
-        return image_path,image, (segmentation_image, segmentation_image) # 1 x H x W [[0, 1], [2, 0]]
+        return image_path, image, (segmentation_image, segmentation_image)
     
     def __len__(self):
         return len(self._data)
