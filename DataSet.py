@@ -130,7 +130,7 @@ class MyDataset(torch.utils.data.Dataset):
     '''
     Class to load the dataset
     '''
-    def __init__(self, transform=None, valid=False, engin='kaggle', data='bdd', task='multi', data_path=None, iadd_oversample_ratio=10):
+    def __init__(self, transform=None, valid=False, engin='kaggle', data='bdd', task='multi', data_path=None, iadd_oversample_ratio=20):
         '''
         :param transform: Type of transformation
         :param valid: Whether this is validation set
